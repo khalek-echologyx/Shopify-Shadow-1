@@ -1,0 +1,152 @@
+<article class="max-w-6xl mx-auto">
+  {% for block in section.blocks %}
+    {% case block.type %}
+      {% when 'article_title' %}
+        <h1>{{ article.title }}</h1>
+      {% when 'article_content' %}
+        <div class="">{{ article.content }}</div>
+      {% when 'article_author' %}
+        {% if section.settings.enable_author %}
+          <small>{{ article.author }}</small>
+        {% endif %}
+      {% when 'article_published_date' %}
+        {% if section.settings.enable_published_date %}
+          <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+            {{- article.published_at | date: '%Y-%m-%d' -}}
+          </time>
+        {% endif %}
+      {% when 'featured_image' %}
+        <div class="w-full mb-5">
+          <img
+            class="w-full object-cover rounded-xl h-75"
+            src="{{ article.image | img_url: 'large' }}"
+            alt="{{ article.image.alt }}"
+            height="500"
+            width="400"
+          >
+        </div>
+      {% else %}
+
+    {% endcase %}
+  {% endfor %}
+</article>
+
+{% if blog.comments_enabled? %}
+  <div id="comments" class="my-8">
+    {% if article.comment_count > 0 %}
+        <div class="flex-1 items-center justify-center mx-auto w-4xl px-4">
+            <h1 class="text-lg mb-4 font-medium">See what people are saying.</h1>
+            {% paginate article.comments by 5 %}
+                {% for comment in article.comments %}
+                    <div class="flex-1 border my-4 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                        <span class="comment-author">{{ comment.author }}</span>
+                        <p class="comment-body">{{ comment.content }}</p>
+                    </div>
+                {% endfor %}
+                {% if paginate.pages > 1 %}
+                    {{ paginate | default_pagination }}
+                {% endif %}
+            {% endpaginate %}
+        </div>
+    {% else %}
+      <div class="flex-1 mx-auto items-center justify-center max-w-4xl px-4">
+        <p class="text-gray-700 text-lg mb-3">No comments yet. Be the first to comment!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div id="comment_form" class="mb-8">
+    {% form 'new_comment', article %}
+      <div class="flex-1 mx-auto items-center justify-center max-w-4xl px-4">
+        <div class="px-1 md:flex mb-3">
+          <div class="px-3 md:w-1/2">
+            <label for="comment_author" class="text-gray-700 font-medium uppercase text-xs mb-2">Name</label>
+            <input
+              type="text"
+              name="comment[author]"
+              id="comment_author"
+              class="w-full text-gray-700 border py-3 px-4 mb-3 focus:outline-none"
+              placeholder="Jane Doe"
+              required
+            >
+          </div>
+          <div class="px-3 md:w-1/2">
+            <label for="comment_email" class="text-gray-700 font-medium uppercase text-xs mb-2">Email</label>
+            <input
+              type="email"
+              name="comment[email]"
+              id="comment_email"
+              class="w-full text-gray-700 border py-3 px-4 mb-3 focus:outline-none"
+              placeholder="jane.doe@example.com"
+              required
+            >
+          </div>
+        </div>
+        <div class="px-1 md:flex mb-3">
+            <div class="md:w-full px-3">
+                <label for="comment_body" class="text-gray-700 font-medium uppercase text-xs mb-2">Comment</label>
+                <textarea
+                  name="comment[body]"
+                  id="comment_body"
+                  class="w-full text-gray-700 border py-3 px-4 mb-3 focus:outline-none"
+                  placeholder="Your comment here..."
+                  required
+                ></textarea>
+            </div>
+        </div>
+        <div class="px-1 md:flex mb-3">
+            <div class="md:w-full px-3 w-full">
+                <input type="submit" value="Post Comment" class="bg-green-800 text-white py-3 px-6 rounded hover:bg-green-700 cursor-pointer w-full">
+            </div>
+        </div>
+      </div>
+    {% endform %}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Template Article",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_author",
+      "default": true,
+      "label": "Display Author Name"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_published_date",
+      "default": true,
+      "label": "Display Publish Date"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "article_title",
+      "name": "Title",
+      "limit": 1
+    },
+    {
+      "type": "article_author",
+      "name": "Author",
+      "limit": 1
+    },
+    {
+      "type": "article_published_date",
+      "name": "Published Date",
+      "limit": 1
+    },
+    {
+      "type": "article_content",
+      "name": "Content",
+      "limit": 1
+    },
+    {
+      "type": "featured_image",
+      "name": "Thumbnail",
+      "limit": 1
+    }
+  ]
+}
+{% endschema %}
