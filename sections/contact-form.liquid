@@ -1,0 +1,76 @@
+<div class="flex flex-col items-center my-8">
+    {% if section.settings.title != blank %}
+        <h1 class="text-3xl font-medium mb-5">{{ section.settings.title }}</h1>
+    {% endif %}
+  {% form 'contact' %}
+    {% if form.errors %}
+      <div class="border p-5">
+        <div class="flex fle-row items-center w-full my-3">
+          <div class="text-red-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+            </svg>
+          </div>
+          <div class="text-sm font-medium ml-3">Oh no! Your comment was not posted</div>
+        </div>
+        <ul class="px-4 mb-3 ml-7 list-decimal">
+          {% for error in form.errors %}
+            <li>
+              <span>{{ form.errors.message[error] }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% elsif form.posted_successfully? %}
+      <div class="flex flex-row items-center w-full my-3 p-5">
+        <div class="text-green-500">
+          {% render 'icon-success' %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="grid grid-cols-2 gap-5 w-125">
+      <div class="col-span-1 flex flex-col">
+        <label for="contact_name">Name</label>
+        <input class="border" type="text" name="contact[name]" id="contact_name">
+      </div>
+      <div class="col-span-1 flex flex-col">
+        <label for="contact_email">Email Address</label>
+        <input class="border" type="email" name="contact[email]" id="contact_email">
+      </div>
+      <div class="col-span-2 flex flex-col">
+        <label for="contact_message">Message</label>
+        <textarea class="border" name="contact[body]" id="contact_message"></textarea>
+      </div>
+      <input
+        class="col-span-2 bg-green-500 hover:bg-green-600 cursor-pointer py-2"
+        type="submit"
+        value="Submit Message"
+      >
+    </div>
+  {% endform %}
+</div>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Form"
+    }
+  ]
+}
+{% endschema %}
